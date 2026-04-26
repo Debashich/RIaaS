@@ -1,0 +1,70 @@
+.sidebar {
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 260px;
+}
+
+.workspace-header {
+  padding: 16px;
+  border-bottom: 1px solid #2d3035;
+  background-color: var(--sidebar-header-bg);
+}
+
+.workspace-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--sidebar-header-text);
+}
+
+.channels,
+.direct-messages {
+  padding: 16px;
+}
+
+.channels h3,
+.direct-messages h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--sidebar-text);
+  opacity: 0.7;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  padding: 4px 16px;
+  cursor: pointer;
+  color: var(--channel-text);
+}
+
+li.active {
+  background-color: var(--channel-active-bg);
+  color: var(--channel-active-text);
+}
+
+li:hover {
+  background-color: var(--channel-hover-bg);
+}
+
+.status {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status.online {
+  background-color: var(--dm-online);
+}
+
+.status.offline {
+  background-color: var(--dm-offline);
+}
