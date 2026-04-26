@@ -1,55 +1,129 @@
-:root {
-  --primary-bg: #1A1D21;
-  --primary-text: #D1D2D3;
-  --sidebar-bg: #1A1D21;
-  --sidebar-text: #D1D2D3;
-  --sidebar-header-bg: #1A1D21;
-  --sidebar-header-text: #FFFFFF;
-  --channel-bg: #1A1D21;
-  --channel-text: #D1D2D3;
-  --channel-hover-bg: #31343A;
-  --channel-active-bg: #2C5D95;
-  --channel-active-text: #FFFFFF;
-  --dm-text: #D1D2D3;
-  --dm-online: #2BAC76;
-  --dm-offline: #747F8D;
-  --chat-bg: #FFFFFF;
-  --chat-text: #000000;
-  --chat-header-bg: #FFFFFF;
-  --chat-header-text: #000000;
-  --chat-border: #E0E0E0;
-  --message-input-bg: #FFFFFF;
-  --message-input-text: #000000;
-  --message-input-border: #CCCCCC;
-  --message-input-button-bg: #007A5A;
-  --message-input-button-text: #FFFFFF;
-  --message-input-button-hover-bg: #005C45;
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background: #ffffff !important;
+  }
+
+  body {
+    font-family: 'Lato', 'Slack-Lato', -apple-system, BlinkMacSystemFont,
+      'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.46666667;
+    color: #1d1c1d;
+    background-color: #ffffff !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  :focus-visible {
+    outline: none;
+  }
 }
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--primary-bg);
-  color: var(--primary-text);
+/* ── Scrollbar ───────────────────────────────────────────────────── */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.15) transparent;
 }
 
-#root {
-  display: flex;
-  height: 100vh;
+/* ── Markdown prose overrides ────────────────────────────────────── */
+.slack-prose pre {
+  background-color: #f8f8f8 !important;
+  color: #1d1c1d !important;
+  border: 1px solid #e1e1e1 !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+  padding: 8px 12px !important;
+  margin: 4px 0 !important;
+  overflow-x: auto;
 }
 
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+.slack-prose code {
+  background-color: #e8d5d0 !important;
+  color: #e01e5a !important;
+  padding: 2px 4px !important;
+  border-radius: 3px !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace !important;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.slack-prose pre code {
+  background-color: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+.slack-prose p {
+  margin-top: 0 !important;
+  margin-bottom: 4px !important;
+  line-height: 1.46666667 !important;
+}
+
+.slack-prose p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.slack-prose a {
+  color: #1264a3 !important;
+  text-decoration: none !important;
+}
+
+.slack-prose a:hover {
+  text-decoration: underline !important;
+}
+
+.slack-prose blockquote {
+  border-left: 4px solid #ddd !important;
+  padding-left: 12px !important;
+  color: #616061 !important;
+  margin: 4px 0 !important;
+}
+
+.slack-prose ul, .slack-prose ol {
+  padding-left: 24px !important;
+  margin: 4px 0 !important;
+}
+
+.slack-prose strong {
+  font-weight: 700 !important;
+}
+
+.slack-prose em {
+  font-style: italic !important;
 }

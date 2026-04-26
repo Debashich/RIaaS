@@ -1,91 +1,88 @@
-import { useState, useEffect } from 'react';
-import Sidebar from './components/Sidebar';
-import Chat from './components/Chat';
-import MessageInput from './components/MessageInput';
-import type { Message, Bot } from './types';
-import { chatWithAgent, getCustomBots } from './lib/api';
-import './App.css';
-
-const BUILT_IN_AGENTS: Bot[] = [
-  { name: 'frontend', prompt: 'Frontend Agent' },
-  { name: 'backend', prompt: 'Backend Agent' },
-  { name: 'reviewer', prompt: 'Reviewer Agent' },
-];
+import { useState, useMemo } from 'react';
+import { Sidebar } from './components/Sidebar';
+import { ChatArea } from './components/ChatArea';
+import { InputBar } from './components/InputBar';
+import { useAgents } from './hooks/useAgents';
+import { useChat } from './hooks/useChat';
+import { Menu } from 'lucide-react';
 
 function App() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [agents, setAgents] = useState<Bot[]>(BUILT_IN_AGENTS);
-  const [activeAgent, setActiveAgent] = useState<Bot>(BUILT_IN_AGENTS[0]);
+  const { agents, refreshAgents } = useAgents();
+  const [activeAgentId, setActiveAgentId] = useState<string>('frontend');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchBots = async () => {
-      try {
-        const customBots = await getCustomBots();
-        setAgents([...BUILT_IN_AGENTS, ...customBots]);
-      } catch (error) {
-        console.error('Error fetching custom bots:', error);
-      }
-    };
-    fetchBots();
-  }, []);
+  const activeAgent = useMemo(
+    () => agents.find((a) => a.id === activeAgentId) || agents[0],
+    [agents, activeAgentId]
+  );
 
-  const handleSendMessage = async (text: string) => {
-    let targetAgent = activeAgent.name;
-    let messageContent = text;
+  const { messages, isTyping, sendMessage } = useChat(activeAgent.id);
 
-    const mentionRegex = /@(\w+)/;
-    const match = text.match(mentionRegex);
-
-    if (match) {
-      const agentName = match[1];
-      const foundAgent = agents.find(a => a.name.toLowerCase() === agentName.toLowerCase());
-      if (foundAgent) {
-        targetAgent = foundAgent.name;
-        messageContent = text.replace(mentionRegex, '').trim();
-      }
-    }
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: messageContent,
-      timestamp: Date.now(),
-    };
-    setMessages((prev) => [...prev, userMessage]);
-
-    try {
-      const response = await chatWithAgent({ agent: targetAgent, message: messageContent, image: null });
-      const agentMessage: Message = {
-        id: Date.now().toString(),
-        role: 'agent',
-        content: response.response,
-        timestamp: Date.now(),
-        agent: targetAgent,
-      };
-      setMessages((prev) => [...prev, agentMessage]);
-    } catch (error) {
-      console.error('Error communicating with the agent:', error);
-      const errorMessage: Message = {
-        id: Date.now().toString(),
-        role: 'agent',
-        content: 'Sorry, I am having trouble connecting to the bot.',
-        timestamp: Date.now(),
-        agent: targetAgent,
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    }
+  const handleSelectAgent = (id: string) => {
+    setActiveAgentId(id);
+    setMobileMenuOpen(false);
   };
 
   return (
-    <div className="app">
-      <Sidebar agents={agents} activeAgent={activeAgent} setActiveAgent={setActiveAgent} />
-      <div className="main-content">
-        <Chat messages={messages} />
-        <MessageInput onSendMessage={handleSendMessage} />
+    <div className="flex h-screen w-screen overflow-hidden bg-white">
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex h-full flex-shrink-0">
+        <Sidebar
+          agents={agents}
+          activeAgentId={activeAgent.id}
+          onSelectAgent={handleSelectAgent}
+          onRefreshAgents={refreshAgents}
+        />
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 flex md:hidden">
+          <div
+            className="fixed inset-0 bg-black/40"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="relative w-[260px] h-full shadow-xl z-10">
+            <Sidebar
+              agents={agents}
+              activeAgentId={activeAgent.id}
+              onSelectAgent={handleSelectAgent}
+              onRefreshAgents={refreshAgents}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col min-w-0 h-full bg-white">
+        {/* Channel header */}
+        <div className="flex items-center h-[49px] px-4 border-b border-[#e1e1e1] bg-white flex-shrink-0">
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="md:hidden p-1 mr-3 text-[#616061] hover:text-[#1d1c1d]"
+          >
+            <Menu size={20} />
+          </button>
+          <span className="text-[15px] text-[#616061] font-bold mr-1">#</span>
+          <span className="text-[15px] text-[#1d1c1d] font-extrabold">{activeAgent.name}</span>
+        </div>
+
+        {/* Chat area */}
+        <ChatArea
+          messages={messages.filter(
+            (m) => m.role === 'user' || m.agentId === activeAgent.id
+          )}
+          agent={activeAgent}
+          isTyping={isTyping}
+        />
+
+        {/* Input bar */}
+        <div className="flex-shrink-0 bg-white">
+          <InputBar onSend={sendMessage} disabled={isTyping} />
+        </div>
       </div>
     </div>
   );
 }
 
 export default App;
-

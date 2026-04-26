@@ -1,32 +1,19 @@
+export interface Bot {
+  name: string;
+  prompt: string;
+  description?: string;
+  accent?: string;
+}
+
+export interface Agent extends Bot {
+  id: string; // usually lowercase name
+}
+
 export interface Message {
   id: string;
   role: 'user' | 'agent';
   content: string;
+  agentId?: string; // which agent replied
   image?: string | null;
-  timestamp: number;
-  agent?: string;
-}
-
-export interface Agent {
-// ...existing code...
-
-
-export interface Bot {
-  name: string;
-  prompt: string;
-}
-
-export interface ChatRequest {
-  agent: string;
-  message: string;
-  image: string | null;
-}
-
-export interface ChatResponse {
-  response: string;
-  error?: string;
-}
-
-export interface BotsResponse {
-  bots: Bot[];
+  createdAt: number;
 }
